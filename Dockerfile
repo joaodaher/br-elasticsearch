@@ -11,6 +11,6 @@ ADD ./plugins/analysis-phonetic-5.1.1.zip /tmp
 RUN elasticsearch-plugin install file:///tmp/analysis-phonetic-5.1.1.zip
 RUN elasticsearch-plugin install ingest-attachment
 
-ADD ./elasticsearch/config/ /usr/share/elasticsearch/config/
+ADD ./config/ /usr/share/elasticsearch/config/
 
 CMD ["-E", "network.host=0.0.0.0", "-E", "discovery.zen.minimum_master_nodes=1"]
