@@ -12,5 +12,6 @@ RUN elasticsearch-plugin install ingest-geoip
 RUN elasticsearch-plugin install ingest-user-agent
 
 ADD ./config/elasticsearch.yml /usr/share/elasticsearch/config/elasticsearch.yml
+ADD ./plugins/geoip /usr/share/elasticsearch/config/ingest-geoip
 
 CMD ["-E", "network.host=0.0.0.0", "-E", "discovery.zen.minimum_master_nodes=1"]
