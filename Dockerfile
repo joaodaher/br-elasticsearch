@@ -2,8 +2,6 @@ FROM elasticsearch:5.2.0
 
 MAINTAINER Joao Daher <joao.daher.neto@gmail.com>
 
-ENV ES_JAVA_OPTS="-Des.path.conf=/etc/elasticsearch"
-
 RUN elasticsearch-plugin install --batch x-pack
 
 ADD ./plugins/hunspell /usr/share/elasticsearch/config/hunspell
@@ -13,6 +11,7 @@ RUN elasticsearch-plugin install ingest-attachment
 RUN elasticsearch-plugin install ingest-geoip
 RUN elasticsearch-plugin install ingest-user-agent
 
-ADD ./config/ /usr/share/elasticsearch/config/
+ADD ./config/elasticsearch.yml /usr/share/elasticsearch/config/elasticsearch.yml
+ADD ./plugins/geoip /usr/share/elasticsearch/config/ingest-geoip
 
 CMD ["-E", "network.host=0.0.0.0", "-E", "discovery.zen.minimum_master_nodes=1"]
