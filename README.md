@@ -1,4 +1,4 @@
-[![Docker Automated buil](https://img.shields.io/docker/pulls/joaodaher/br-elasticsearch.svg?style=flat-square)](https://hub.docker.com/r/joaodaher/br-elasticsearch/)
+[![Docker Automated buil](https://img.shields.io/docker/pulls/joaodaher/br-elasticsearch.svg)](https://hub.docker.com/r/joaodaher/br-elasticsearch/) [![](https://images.microbadger.com/badges/image/joaodaher/br-elasticsearch.svg)](https://microbadger.com/images/joaodaher/br-elasticsearch "Get your own image badge on microbadger.com")
 
 # Docker Elasticsearch Br
 

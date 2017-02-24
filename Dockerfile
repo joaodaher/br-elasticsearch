@@ -8,6 +8,8 @@ ADD ./plugins/hunspell /usr/share/elasticsearch/config/hunspell
 ADD ./plugins/analysis-phonetic-5.2.0.zip /tmp
 RUN elasticsearch-plugin install file:///tmp/analysis-phonetic-5.2.0.zip
 RUN elasticsearch-plugin install ingest-attachment
+RUN elasticsearch-plugin install ingest-geoip
+RUN elasticsearch-plugin install ingest-user-agent
 
 ADD ./config/elasticsearch.yml /usr/share/elasticsearch/config/elasticsearch.yml
 
