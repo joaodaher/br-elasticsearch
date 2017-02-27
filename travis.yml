@@ -1,0 +1,10 @@
+language: python
+services:
+  - docker
+
+install:
+  - docker build -t joaodaher/br-elasticsearch .
+  - docker run -d -p 9200:9200 --name es joaodaher/br-elasticsearch
+
+script:
+  - docker ps | grep -q blog
