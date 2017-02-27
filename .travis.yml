@@ -1,0 +1,16 @@
+language: python
+services:
+  - docker
+
+install:
+  - docker build -t joaodaher/br-elasticsearch .
+  - docker run -d -p 9200:9200 --name es joaodaher/br-elasticsearch
+
+script:
+  - docker ps | grep -q es
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    docker push joaodaher/br-elasticsearch;
+    fi
