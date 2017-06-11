@@ -12,7 +12,7 @@ network.host: ${NETWORK_HOST}
 
 path:
   data: /data/data
-  logs: /var/log
+  logs: /data/log
 
 bootstrap:
   memory_lock: true

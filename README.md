@@ -1,4 +1,6 @@
-[![Docker Automated buil](https://img.shields.io/docker/pulls/joaodaher/br-elasticsearch.svg)](https://hub.docker.com/r/joaodaher/br-elasticsearch/) [![](https://images.microbadger.com/badges/image/joaodaher/br-elasticsearch.svg)](https://microbadger.com/images/joaodaher/br-elasticsearch "Get your own image badge on microbadger.com") [![Build Status](https://travis-ci.org/joaodaher/elasticsearch-docker.svg?branch=master)](https://travis-ci.org/joaodaher/elasticsearch-docker)
+[![Docker Automated buil](https://img.shields.io/docker/pulls/joaodaher/elasticsearch.svg)](https://hub.docker.com/r/joaodaher/elasticsearch/) 
+[![](https://images.microbadger.com/badges/image/joaodaher/elasticsearch.svg)](https://microbadger.com/images/joaodaher/elasticsearch) 
+[![Build Status](https://travis-ci.org/joaodaher/elasticsearch-docker.svg?branch=master)](https://travis-ci.org/joaodaher/elasticsearch-docker)
 
 # Docker Elasticsearch Br
 
@@ -14,19 +16,19 @@ Latest Elasticsearch docker image with Brazilian Portuguese capabilities:
 Download the image:
 
 `
-$ docker pull joaodaher/br-elasticsearch
+$ docker pull joaodaher/elasticsearch
 `
 
 Add to your Dockerfile:
 
 `
-FROM joaodaher/br-elasticsearch
+FROM joaodaher/elasticsearch
 `
 
 Or to your docker-compose.yml:
 
 `
-image: joaodaher/br-elasticsearch
+image: joaodaher/elasticsearch
 `
 
 ## Features
