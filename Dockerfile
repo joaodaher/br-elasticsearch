@@ -26,4 +26,4 @@ ADD ./plugins/hunspell /elasticsearch/config/hunspell
 ADD ./plugins/geoip /elasticsearch/config/ingest-geoip
 #ADD ./plugins/analysis-phonetic-${ES_VERSION}.zip /tmp
 
-ENV ES_PLUGINS_INSTALL ingest-attachment,ingest-geoip,ingest-user-agent,repository-gcs,x-pack
+ENV ES_PLUGINS_INSTALL ingest-attachment,ingest-geoip,ingest-user-agent,repository-gcs
