@@ -1,17 +1,30 @@
-# where am I
-#cluster.name: wally
-network.host: 0.0.0.0
+cluster:
+  name: ${CLUSTER_NAME}
 
-# who am I
-#node.name: mewtwo
+node:
+  master: ${NODE_MASTER}
+  data: ${NODE_DATA}
+  name: ${NODE_NAME}
+  ingest: ${NODE_INGEST}
+  max_local_storage_nodes: ${MAX_LOCAL_STORAGE_NODES}
 
-# birl
-node.master: true
-node.data: true
-action.destructive_requires_name: true
+network.host: ${NETWORK_HOST}
 
-# free-tier
-xpack.security.enabled: false
-xpack.monitoring.enabled: true
-xpack.graph.enabled: false
-xpack.watcher.enabled: false
+path:
+  data: /data/data
+  logs: /var/log
+
+bootstrap:
+  memory_lock: true
+
+http:
+  enabled: ${HTTP_ENABLE}
+  compression: true
+  cors:
+    enabled: ${HTTP_CORS_ENABLE}
+    allow-origin: ${HTTP_CORS_ALLOW_ORIGIN}
+
+discovery:
+  zen:
+    ping.unicast.hosts: ${DISCOVERY_SERVICE}
+    minimum_master_nodes: ${NUMBER_OF_MASTERS}

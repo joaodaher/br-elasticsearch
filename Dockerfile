@@ -1,17 +1,101 @@
-FROM elasticsearch:5.2.0
+# Dockerfile for ELK stack
+# Elasticsearch, Logstash, Kibana 5.4.0
 
+# Build with:
+# docker build -t <repo-user>/elk .
+
+# Run with:
+# docker run -p 5601:5601 -p 9200:9200 -p 5044:5044 -it --name elk <repo-user>/elk
+
+FROM phusion/baseimage
 MAINTAINER Joao Daher <joao.daher.neto@gmail.com>
+ENV REFRESHED_AT 2017-01-13
 
-RUN elasticsearch-plugin install --batch x-pack
 
-ADD ./plugins/hunspell /usr/share/elasticsearch/config/hunspell
-ADD ./plugins/analysis-phonetic-5.2.0.zip /tmp
-RUN elasticsearch-plugin install file:///tmp/analysis-phonetic-5.2.0.zip
-RUN elasticsearch-plugin install ingest-attachment
-RUN elasticsearch-plugin install ingest-geoip
-RUN elasticsearch-plugin install ingest-user-agent
+###############################################################################
+#                                INSTALLATION
+###############################################################################
+
+### install prerequisites (cURL, gosu, JDK)
+
+ENV GOSU_VERSION 1.8
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN set -x \
+ && apt-get update -qq \
+ && apt-get install -qqy --no-install-recommends ca-certificates curl \
+ && rm -rf /var/lib/apt/lists/* \
+ && curl -L -o /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
+ && curl -L -o /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
+ && export GNUPGHOME="$(mktemp -d)" \
+ && gpg --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
+ && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
+ && rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
+ && chmod +x /usr/local/bin/gosu \
+ && gosu nobody true \
+ && apt-get update -qq \
+ && apt-get install -qqy openjdk-8-jdk \
+ && apt-get clean \
+ && set +x
+
+
+ENV ELK_VERSION 5.4.0
+
+### install Elasticsearch
+
+ENV ES_VERSION ${ELK_VERSION}
+ENV ES_HOME /opt/elasticsearch
+ENV ES_PACKAGE elasticsearch-${ES_VERSION}.tar.gz
+ENV ES_GID 991
+ENV ES_UID 991
+
+RUN mkdir ${ES_HOME} \
+ && curl -O https://artifacts.elastic.co/downloads/elasticsearch/${ES_PACKAGE} \
+ && tar xzf ${ES_PACKAGE} -C ${ES_HOME} --strip-components=1 \
+ && rm -f ${ES_PACKAGE} \
+ && groupadd -r elasticsearch -g ${ES_GID} \
+ && useradd -r -s /usr/sbin/nologin -M -c "Elasticsearch service user" -u ${ES_UID} -g elasticsearch elasticsearch \
+ && mkdir -p /var/log/elasticsearch /etc/elasticsearch /etc/elasticsearch/scripts /var/lib/elasticsearch \
+ && chown -R elasticsearch:elasticsearch ${ES_HOME} /var/log/elasticsearch /var/lib/elasticsearch
+
+ADD ./config/elasticsearch-init /etc/init.d/elasticsearch
+RUN sed -i -e 's#^ES_HOME=$#ES_HOME='$ES_HOME'#' /etc/init.d/elasticsearch \
+ && chmod +x /etc/init.d/elasticsearch
+
+
+
+###############################################################################
+#                               CONFIGURATION
+###############################################################################
+
+### configure Elasticsearch
 
 ADD ./config/elasticsearch.yml /usr/share/elasticsearch/config/elasticsearch.yml
-ADD ./plugins/geoip /usr/share/elasticsearch/config/ingest-geoip
+ADD ./config/elasticsearch-jvm.options /etc/elasticsearch/jvm.options
+ADD ./config/elasticsearch-default /etc/default/elasticsearch
+ADD ./config/elasticsearch-log4j2.properties /etc/elasticsearch/log4j2.properties
+RUN chmod -R +r /etc/elasticsearch
 
-CMD ["-E", "network.host=0.0.0.0", "-E", "discovery.zen.minimum_master_nodes=1"]
+RUN gosu elasticsearch ${ES_HOME}/bin/elasticsearch-plugin install --batch x-pack
+
+ADD ./plugins/hunspell /usr/share/elasticsearch/config/hunspell
+#ADD ./plugins/analysis-phonetic-${ELK_VERSION}.zip /tmp
+#RUN gosu elasticsearch ${ES_HOME}/bin/elasticsearch-plugin install file:///tmp/analysis-phonetic-${ELK_VERSION}.zip
+RUN gosu elasticsearch ${ES_HOME}/bin/elasticsearch-plugin install ingest-attachment
+RUN gosu elasticsearch ${ES_HOME}/bin/elasticsearch-plugin install ingest-geoip
+RUN gosu elasticsearch ${ES_HOME}/bin/elasticsearch-plugin install ingest-user-agent
+
+ADD ./plugins/geoip /etc/elasticsearch/ingest-geoip
+
+
+
+###############################################################################
+#                                   START
+###############################################################################
+
+ADD ./start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
+
+EXPOSE 9200 9300
+
+CMD [ "/usr/local/bin/start.sh" ]
